@@ -20,10 +20,12 @@ fn main() {
 }
 
 /// Find the product of the two numbers which sum to the target value.
+///
+/// Avoid two loops to make this O(N).
 fn part_one(input: &HashSet<u32>, target: u32) -> Option<u32> {
     for num1 in input {
-        for num2 in input {
-            if num1 + num2 == target {
+        if let Some(num2) = target.checked_sub(num1.clone()) {
+            if input.contains(&num2) {
                 return Some(num1 * num2);
             }
         }
@@ -32,14 +34,16 @@ fn part_one(input: &HashSet<u32>, target: u32) -> Option<u32> {
 }
 
 /// Find the product of the three numbers which sum to the target value.
+///
+/// Use part one to make this O(N^2).
 fn part_two(input: &HashSet<u32>, target: u32) -> Option<u32> {
     for num1 in input {
-        for num2 in input {
-            for num3 in input {
-                if num1 + num2 + num3 == target {
-                    return Some(num1 * num2 * num3);
-                }
-            }
+        // Can reuse part one, using the sub-problem of finding two numbers
+        // which sum to the target less the current number.
+        // If the current number is greater than the target, use a target of 0
+        // (not possible to reach).
+        if let Some(answer) = part_one(input, target.checked_sub(num1.clone()).unwrap_or(0)) {
+            return Some(num1 * answer);
         }
     }
     None
