@@ -88,16 +88,20 @@ fn get_data(input: String) -> Result<ChallengeData, io::Error> {
 }
 
 fn main() -> Result<(), io::Error> {
-    let input = get_day_input(DAYNUM);
-    let data = get_data(input)?;
     println!("Day {}:", DAYNUM);
     println!("==========");
+    println!("Getting data...");
+    let data = print_elapsed_time(|| get_data(get_day_input(DAYNUM)))?;
+    println!("==========");
+    println!("Solving part one...");
     println!(
-        "Part one: {}",
+        "Answer: {}",
         print_elapsed_time(|| part_one(&data)).expect("No solution found for part one"),
     );
+    println!("==========");
+    println!("Solving part two...");
     println!(
-        "Part two: {}",
+        "Answer: {}",
         print_elapsed_time(|| part_two(&data)).expect("No solution found for part two"),
     );
     Ok(())
