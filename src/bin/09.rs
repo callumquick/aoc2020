@@ -1,4 +1,4 @@
-/// Solution to Advent of Code Challenge Day 08.
+/// Solution to Advent of Code Challenge Day 09.
 use aoc2020::{get_day_input, print_elapsed_time};
 use std::collections::{HashSet, VecDeque};
 use std::num::ParseIntError;
