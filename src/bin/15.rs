@@ -1,6 +1,5 @@
 /// Solution to Advent of Code Challenge Day 15.
 use aoc2020::{get_day_input, print_elapsed_time};
-use std::collections::HashMap;
 use std::num::ParseIntError;
 
 type Number = usize;
@@ -13,7 +12,8 @@ const TARGET1: usize = 2020;
 const TARGET2: usize = 30000000;
 
 fn solve_for(data: &ChallengeData, target: usize) -> Option<ChallengeOut> {
-    let mut last_seen: HashMap<Number, usize> = HashMap::new();
+    // Try to correct performance issues by using massive allocated array to store history in.
+    let mut last_seen: Vec<Number> = vec![0; target];
     let mut last_num: Number;
     let mut curr_turn: usize = 0;
 
@@ -21,7 +21,7 @@ fn solve_for(data: &ChallengeData, target: usize) -> Option<ChallengeOut> {
     // break the needed chain).
     for number in &data[..data.len() - 1] {
         curr_turn += 1;
-        last_seen.insert(*number, curr_turn);
+        last_seen[*number] = curr_turn;
     }
 
     // Set the current "look back" number to the last starting number, then start the algorithm.
@@ -29,15 +29,14 @@ fn solve_for(data: &ChallengeData, target: usize) -> Option<ChallengeOut> {
     last_num = *data.last().unwrap();
 
     while curr_turn < target {
-        let number: Number = last_seen
-            .get(&last_num)
-            .map(|last| curr_turn - last)
-            .unwrap_or(0);
+        let number: Number = match last_seen[last_num] {
+            // Never seen before as there is no turn 0.
+            0 => 0,
+            _ => curr_turn - last_seen[last_num],
+        };
 
-        // Insert the previous num (which is what we're looking at) into the last seen hashmap,
-        // replacing its most recent seeing and pushing its most recent seeing to its last, if it is
-        // not already there then insert with the "last" time said as 0.
-        last_seen.insert(last_num, curr_turn);
+        // Insert the previous num (which is what we're looking at) into the last seen history.
+        last_seen[last_num] = curr_turn;
 
         curr_turn += 1;
         last_num = number;
